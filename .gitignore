@@ -1,0 +1,25 @@
+# Entorno virtual
+.venv/
+
+# VS Code
+.vscode/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+
+# Archivos temporales
+*.log
+
+# Archivos generados por la aplicación
+backend/uploads/*
+backend/salidas/*
+backend/output/*
+
+# Mantener las carpetas
+!backend/uploads/.gitkeep
+!backend/salidas/.gitkeep
+!backend/output/.gitkeep
+
+# Archivos temporales
+estructura.txt
