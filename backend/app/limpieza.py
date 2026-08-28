@@ -1,48 +1,43 @@
+from pathlib import Path
 import shutil
 
 
 def limpiar_salida_unidad(
-    output_dir,
-    unidad
-):
+    output_dir: Path,
+    unidad: str,
+) -> None:
 
     carpeta = output_dir / unidad
 
-
-    print("==============================")
+    print("=" * 30)
     print("LIMPIANDO SALIDA")
     print("UNIDAD:", unidad)
     print("CARPETA:", carpeta)
-    print("==============================")
-
+    print("=" * 30)
 
     if carpeta.exists():
 
-
         for elemento in carpeta.iterdir():
 
+            try:
 
-            if elemento.is_dir():
+                if elemento.is_dir():
 
-                shutil.rmtree(
-                    elemento
-                )
+                    shutil.rmtree(elemento)
 
+                else:
 
-            else:
+                    elemento.unlink()
 
-                elemento.unlink()
+            except Exception as e:
 
-
+                print(f"No fue posible eliminar: {elemento}")
+                print(e)
 
     carpeta.mkdir(
-
         parents=True,
-
-        exist_ok=True
-
+        exist_ok=True,
     )
 
-
     print("LIMPIEZA TERMINADA")
-    print("==============================")
+    print("=" * 30)

@@ -67,7 +67,6 @@ body{
 .logo{
 
     height:80px;
-    width:auto;
 
 }
 
@@ -464,11 +463,32 @@ accept=".xlsx"
 
 class="form-control"
 
-required>
+>
 
 
 </div>
 
+<div class="col-md-6 mb-3">
+
+    <label class="form-label fw-bold">
+
+        Archivo Anexo 4
+
+    </label>
+
+    <input
+
+        type="file"
+
+        id="anexo4"
+
+        name="anexo4"
+
+        accept=".xlsx"
+
+        class="form-control">
+
+</div>
 
 </div>
 
@@ -563,6 +583,12 @@ document.getElementById("resultado");
 const boton =
 
 document.getElementById("btnGenerar");
+
+const archivosFus =
+document.getElementById("archivos");
+
+const archivoAnexo4 =
+document.getElementById("anexo4");
 
 
 
@@ -732,7 +758,29 @@ ${s}
 
 });
 
+// ============================
+// VALIDAR ORIGEN DE DATOS
+// ============================
 
+archivosFus.addEventListener("change", () => {
+
+    if (archivosFus.files.length > 0) {
+
+        archivoAnexo4.value = "";
+
+    }
+
+});
+
+archivoAnexo4.addEventListener("change", () => {
+
+    if (archivoAnexo4.files.length > 0) {
+
+        archivosFus.value = "";
+
+    }
+
+});
 
 
 
@@ -1143,9 +1191,10 @@ Seleccione
 
 unidad.value = "";
 
+archivosFus.disabled = false;
+archivoAnexo4.disabled = false;
 
-
-},10000);
+},3000);
 
 
 
@@ -1161,6 +1210,9 @@ function limpiarFormulario(){
     setTimeout(()=>{
 
         formulario.reset();
+
+        archivosFus.disabled = false;
+        archivoAnexo4.disabled = false;
 
 
         servicio.innerHTML =
@@ -1181,7 +1233,7 @@ function limpiarFormulario(){
         resultado.innerHTML = "";
 
 
-    },10000);
+    },5000);
 
 }
 

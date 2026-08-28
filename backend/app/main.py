@@ -6,6 +6,7 @@ import shutil
 import uuid
 import traceback
 import time
+from typing import Optional
 
 from fastapi import (
     FastAPI,
@@ -39,12 +40,17 @@ from .info import (
     obtener_servicios,
     obtener_terminal,
     obtener_unidad_por_servicio,
+    obtener_unidad_por_servicio_fus,
 )
 
 
 from .generador import (
     generar_planillas,
     leer_fus,
+)
+
+from .anexo4 import (
+    validar_unidad_anexo4,
 )
 
 
@@ -197,7 +203,7 @@ def validar_unidad_fus(
         for servicio in servicios:
 
 
-            unidad = obtener_unidad_por_servicio(
+            unidad = obtener_unidad_por_servicio_fus(
 
                 servicio
 
@@ -367,7 +373,9 @@ def api_terminal(
 @app.post("/generar")
 async def generar(
 
-    archivos: list[UploadFile] = File(...),
+    archivos: Optional[list[UploadFile]] = File(default=None),
+
+    anexo4: Optional[UploadFile] = File(default=None),
 
     unidad: str = Form(...),
 
@@ -380,71 +388,74 @@ async def generar(
 
     print("ENTRO AL ENDPOINT GENERAR")
 
+    # Normalizar entradas
+    archivos = [a for a in (archivos or []) if a and a.filename]
+    tiene_fus = len(archivos) > 0
+    tiene_anexo4 = anexo4 is not None and bool(anexo4.filename)
 
     print("==============================")
     print("INICIO GENERACION")
     print("Unidad:", unidad)
     print("Servicio:", servicio)
     print("Tipo Día:", tipo_dia)
-    print("Cantidad archivos:", len(archivos))
+    print("Tiene FUS:", tiene_fus)
+    print("Cantidad FUS:", len(archivos))
+    print("Tiene Anexo4:", tiene_anexo4)
+    if tiene_anexo4:
+        print("Archivo:", anexo4.filename)
     print("==============================")
 
-
     inicio = time.time()
-
-
     archivos_guardados = []
 
+    # ==================================
+    # VALIDAR ORIGEN
+    # ==================================
 
+    if tiene_fus and tiene_anexo4:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": "Seleccione Archivos FUS o Archivo Anexo 4, no ambos."
+            }
+        )
+
+    if not tiene_fus and not tiene_anexo4:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": "Debe seleccionar Archivos FUS o un Archivo Anexo 4."
+            }
+        )
 
     try:
 
 
         # ==================================
-        # GUARDAR FUS TEMPORALES
+        # GUARDAR ARCHIVOS TEMPORALES
         # ==================================
 
-        for archivo in archivos:
+        if tiene_fus:
+            archivos_subidos = archivos
+        else:
+            archivos_subidos = [anexo4]
 
+        for archivo in archivos_subidos:
 
-            nombre = (
-
-                str(uuid.uuid4())
-
-                +
-
-                ".xlsx"
-
-            )
-
+            nombre = f"{uuid.uuid4()}.xlsx"
 
             ruta = UPLOAD_DIR / nombre
 
-
-
-            with open(
-
-                ruta,
-
-                "wb"
-
-            ) as buffer:
-
+            with open(ruta, "wb") as buffer:
 
                 shutil.copyfileobj(
-
                     archivo.file,
-
                     buffer
-
                 )
 
-
-            archivos_guardados.append(
-
-                ruta
-
-            )
+            archivos_guardados.append(ruta)
 
 
 
@@ -461,31 +472,58 @@ async def generar(
         # VALIDAR UNIDAD
         # ==================================
 
-        valido, mensaje = validar_unidad_fus(
+        if tiene_fus:
 
-            archivos_guardados,
+            valido, mensaje = validar_unidad_fus(
 
-            unidad
+                archivos_guardados,
 
-        )
-
-
-        if not valido:
-
-
-            return JSONResponse(
-
-                status_code=400,
-
-                content={
-
-                    "ok": False,
-
-                    "error": mensaje
-
-                }
+                unidad
 
             )
+
+            if not valido:
+
+                return JSONResponse(
+
+                    status_code=400,
+
+                    content={
+
+                        "ok": False,
+
+                        "error": mensaje
+
+                    }
+
+                )
+
+        else:
+
+            valido, mensaje = validar_unidad_anexo4(
+
+                archivos_guardados[0],
+
+                unidad
+
+            )
+
+            if not valido:
+
+                return JSONResponse(
+
+                    status_code=400,
+
+                    content={
+
+                        "ok": False,
+
+                        "error": mensaje
+
+                    }
+
+                )
+
         # ==================================
         # LIMPIAR ARCHIVOS ANTERIORES
         # ==================================
@@ -517,7 +555,9 @@ async def generar(
 
             servicio,
 
-            tipo_dia
+            tipo_dia,
+
+            usar_anexo4=tiene_anexo4
 
         )
 

@@ -98,23 +98,19 @@ def leer_fus(
                     fila,
                     2
                 ).value
+                
 
             ).upper()
 
 
 
-            # Solo EXP
-
-            if tipo != "EXP":
-
+            # Aceptar los tres eventos
+            if tipo not in ("EXP", "VPA", "VEX"):
                 continue
-
-
-
 
             registro = {
 
-
+                "tipo": tipo,
 
                 # A Evento
 
@@ -280,7 +276,7 @@ def leer_fus(
 
     print("==============================")
     print(
-        "TOTAL EXP:",
+        "TOTAL EVENTOS:",
         len(registros)
     )
     print("==============================")

@@ -110,6 +110,10 @@ def cargar_info():
         "TIPO DE DIA"
     )
 
+    col_codigo_ts = encabezados.get(
+        "CODIGO TS SERVICIO"
+    )
+
 
 
     for fila in range(2, ws.max_row + 1):
@@ -147,6 +151,18 @@ def cargar_info():
 
         tipo_dia = None
 
+        codigo_ts = None
+
+        if col_codigo_ts:
+
+            codigo_ts = ws.cell(
+
+                fila,
+
+                col_codigo_ts
+
+            ).value
+
 
         if col_tipo:
 
@@ -180,6 +196,14 @@ def cargar_info():
                 "servicio":
 
                     str(servicio).strip(),
+
+                "codigo_ts":
+
+                    str(codigo_ts).strip()
+
+                    if codigo_ts
+
+                    else None,    
 
 
                 "terminal":
@@ -282,7 +306,6 @@ def obtener_terminal(
 
     for x in datos:
 
-
         if (
 
             x["unidad"] == unidad
@@ -291,8 +314,7 @@ def obtener_terminal(
 
             normaliza(
                 x["servicio"]
-            )
-            == servicio_buscar
+            ) == servicio_buscar
 
         ):
 
@@ -330,7 +352,7 @@ def obtener_unidad_por_servicio(servicio):
 
         if normaliza(
 
-            x["servicio"]
+            x["codigo_ts"]
 
         ) == servicio_buscar:
 
@@ -354,5 +376,35 @@ def obtener_unidad_por_servicio(servicio):
         return list(unidades)
 
 
+
+    return None
+
+# ==========================================================
+# NUEVO:
+# UNIDAD DE UN SERVICIO FUS
+# Busca por la columna SERVICIO de INFO.xlsx
+# ==========================================================
+
+def obtener_unidad_por_servicio_fus(servicio):
+
+    datos = cargar_info()
+
+    servicio_buscar = normaliza(servicio)
+
+    unidades = set()
+
+    for x in datos:
+
+        if normaliza(x["servicio"]) == servicio_buscar:
+
+            unidades.add(x["unidad"])
+
+    if len(unidades) == 1:
+
+        return unidades.pop()
+
+    if len(unidades) > 1:
+
+        return list(unidades)
 
     return None

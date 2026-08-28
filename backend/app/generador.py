@@ -1,8 +1,11 @@
 from pathlib import Path
 from copy import copy
+
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
-
+from .info import cargar_info
+from .anexo4 import leer_anexo4
 
 # ==========================================================
 # NORMALIZAR TEXTO
@@ -77,6 +80,23 @@ def formato_tipo_dia(valor):
 
 
 
+
+# ==========================================================
+# COLORES EVENTOS
+# ==========================================================
+
+COLOR_VPA = PatternFill(
+    fill_type="solid",
+    start_color="C6E0B4",
+    end_color="C6E0B4"
+)
+
+COLOR_VEX = PatternFill(
+    fill_type="solid",
+    start_color="F4B183",
+    end_color="F4B183"
+)
+
 # ==========================================================
 # LEER FUS
 #
@@ -93,6 +113,23 @@ def formato_tipo_dia(valor):
 # Solo EXP
 # ==========================================================
 
+# ==========================================================
+# NORMALIZAR HORA PARA ORDENAR
+# ==========================================================
+def hora_orden(valor):
+
+    if valor is None:
+        return ""
+
+    if hasattr(valor, "strftime"):
+        return valor.strftime("%H:%M:%S")
+
+    return str(valor)
+
+
+# ==========================================================
+# LEER FUS
+# ==========================================================
 def leer_fus(
     archivos_fus
 ):
@@ -139,7 +176,7 @@ def leer_fus(
 
 
 
-            if tipo != "EXP":
+            if tipo not in ("EXP", "VPA", "VEX"):
 
                 continue
 
@@ -148,7 +185,7 @@ def leer_fus(
 
             registro = {
 
-
+                "tipo": tipo,
                 "evento":
 
                     ws.cell(
@@ -251,7 +288,7 @@ def leer_fus(
 
         x["sentido"] or "",
 
-        x["hora"] or 0
+        hora_orden(x["hora"])
 
         )
 
@@ -317,7 +354,9 @@ def crear_planilla(
     terminal
 
 ):
+    import time
 
+    inicio_planilla = time.time()
 
     wb = load_workbook(
         plantilla
@@ -363,6 +402,8 @@ def crear_planilla(
     # RECORRER REGISTROS
     # ======================================================
 
+    print(f"Total registros recibidos: {len(registros)}")
+    
     for registro in registros:
 
 
@@ -408,20 +449,18 @@ def crear_planilla(
                 2
             ).value = registro["tipo_bus"]
 
+            celda = ws.cell(fila_ida, 3)
 
+            if registro["tipo"] == "VPA":
+                celda.value = "Vacío a Patio IDA"
+                celda.fill = COLOR_VPA
 
-            ws.cell(
-                fila_ida,
-                3
-            ).value = (
+            elif registro["tipo"] == "VEX":
+                celda.value = "Vacío a Cabezal IDA"
+                celda.fill = COLOR_VEX
 
-                servicio
-
-                +
-
-                " IDA"
-
-            )
+            else:
+                celda.value = servicio + " IDA"
 
 
 
@@ -460,22 +499,21 @@ def crear_planilla(
                 29
             ).value = registro["tipo_bus"]
 
+            celda = ws.cell(fila_reg, 30)
 
+            if registro["tipo"] == "VPA":
 
+                celda.value = "Vacío a Patio REG"
+                celda.fill = COLOR_VPA
 
-            ws.cell(
-                fila_reg,
-                30
-            ).value = (
+            elif registro["tipo"] == "VEX":
 
-                servicio
+                celda.value = "Vacío a Cabezal REG"
+                celda.fill = COLOR_VEX
 
-                +
+            else:
 
-                " REG"
-
-            )
-
+                celda.value = servicio + " REG"
 
 
 
@@ -593,6 +631,10 @@ def crear_planilla(
 
     wb.close()
 
+    print(
+        f"{servicio} {tipo_dia}: "
+        f"{round(time.time() - inicio_planilla, 2)} segundos"
+    )
 
 
     return salida
@@ -622,26 +664,50 @@ def generar_planillas(
 
     servicio,
 
-    tipo_dia
+    tipo_dia,
+
+    usar_anexo4=False
 
 ):
 
 
-    registros = leer_fus(
-        archivos_fus
-    )
+    # ======================================================
+    # LEER ORIGEN DE DATOS
+    # ======================================================
 
+    if usar_anexo4:
 
+        registros = leer_anexo4(
+            archivos_fus[0]
+        )
 
-    from .info import cargar_info
+    else:
 
-
+        registros = leer_fus(
+            archivos_fus
+        )
 
 
     info = cargar_info()
 
 
+    # ======================================================
+    # DICCIONARIO DE TERMINALES
+    # ======================================================
 
+    terminales = {}
+
+    for dato in info:
+
+        clave = (
+            dato["unidad"],
+            servicio_puro(dato["servicio"])
+        )
+
+        terminales[clave] = dato["terminal"]
+
+    print("TERMINALES CARGADOS:")
+    print(terminales)
 
     # ======================================================
     # OBTENER SERVICIOS
@@ -734,9 +800,25 @@ def generar_planillas(
 
     }
 
+    # ======================================================
+    # INDICE DE REGISTROS
+    # ======================================================
 
+    indice_registros = {}
 
+    for registro in registros:
 
+        clave = (
+            servicio_puro(registro["servicio"]),
+            formato_tipo_dia(registro["tipo_dia"])
+        )
+
+        if clave not in indice_registros:
+            indice_registros[clave] = []
+
+        indice_registros[clave].append(registro)
+
+    print(f"Indice creado: {len(indice_registros)} combinaciones")
 
 
 
@@ -746,169 +828,73 @@ def generar_planillas(
 
     for dia in tipos_dia:
 
-
-
         for serv in servicios:
-
-
-
 
             # ----------------------------------------------
             # BUSCAR TERMINAL
             # ----------------------------------------------
 
-            terminal = ""
-
-
-
-            for dato in info:
-
-
-
-                if (
-
-                    dato["unidad"] == unidad
-
-                    and
-
-                    servicio_puro(
-                        dato["servicio"]
-                    )
-
-                    ==
-                    
+            terminal = terminales.get(
+                (
+                    unidad,
                     servicio_puro(serv)
-
-                ):
-
-
-                    terminal = dato["terminal"]
-
-                    break
-
-
-
-
+                ),
+                ""
+            )
 
             if not terminal:
-
-
-                print(
-                    "SIN TERMINAL:",
-                    serv
-                )
-
-
-
-
+                print("SIN TERMINAL:", serv)
 
             # ----------------------------------------------
             # CARPETA DESTINO
             # ----------------------------------------------
 
             carpeta = (
-
                 salida
-
-                /
-
-                unidad
-
-                /
-
-                dia
-
+                / unidad
+                / dia
             )
-
-
-
-
 
             archivo_salida = carpeta / (
-
-                serv
-
-                +
-
-                " "
-
-                +
-
-                dia
-
-                +
-
-                ".xlsx"
-
+                serv + " " + dia + ".xlsx"
             )
 
-
-
-
-
-
+            print(
+                f"Generando: Servicio={serv} | Tipo={dia}"
+            )
 
             resultado = crear_planilla(
 
-                registros,
+                indice_registros.get(
+                    (
+                        servicio_puro(serv),
+                        formato_tipo_dia(dia)
+                    ),
+                    []
+                ),
 
                 plantilla,
-
                 archivo_salida,
-
                 unidad,
-
                 serv,
-
                 dia,
-
                 terminal
 
             )
 
-
-
-
-
-
-
             if resultado:
 
-
-
-                print(
-                    "GENERADA:",
-                    resultado
-                )
-
-
+                print("GENERADA:", resultado)
 
                 contador["total"] += 1
 
-
-
-
-
                 if dia == "Laboral":
-
                     contador["laboral"] += 1
 
-
-
                 elif dia == "Sabado":
-
                     contador["sabado"] += 1
 
-
-
                 elif dia == "Domingo":
-
                     contador["domingo"] += 1
-
-
-
-
-
-
 
     return contador
