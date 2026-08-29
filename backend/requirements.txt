@@ -3,4 +3,4 @@ uvicorn
 openpyxl
 python-multipart
 jinja2
-starlette
+starlettepandas
