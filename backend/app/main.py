@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 from .zip import crear_zip_planillas
 from .limpieza import limpiar_salida_unidad
 
@@ -22,6 +22,7 @@ from fastapi.responses import (
     FileResponse,
 )
 
+from fastapi.responses import Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -228,7 +229,7 @@ def validar_unidad_fus(
 
                 "No se encontraron servicios "
 
-                "válidos en INFO.xlsx."
+                "vÃ¡lidos en INFO.xlsx."
 
             )
 
@@ -270,6 +271,11 @@ def validar_unidad_fus(
     # ==========================================================
 # PAGINA PRINCIPAL
 # ==========================================================
+
+@app.head("/")
+async def inicio_head():
+    return Response(status_code=200)
+
 
 @app.get(
     "/",
@@ -397,7 +403,7 @@ async def generar(
     print("INICIO GENERACION")
     print("Unidad:", unidad)
     print("Servicio:", servicio)
-    print("Tipo Día:", tipo_dia)
+    print("Tipo DÃ­a:", tipo_dia)
     print("Tiene FUS:", tiene_fus)
     print("Cantidad FUS:", len(archivos))
     print("Tiene Anexo4:", tiene_anexo4)
