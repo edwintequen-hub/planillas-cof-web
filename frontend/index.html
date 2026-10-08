@@ -217,6 +217,164 @@ body{
 
 
 
+
+
+/* PESTAÑAS PRINCIPALES */
+
+.tabs-cof{
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+    padding:6px;
+    background:#eef3f8;
+    border-radius:14px;
+}
+
+.tab-cof{
+    flex:1;
+    border:0;
+    border-radius:10px;
+    padding:12px 18px;
+    background:transparent;
+    color:#536474;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.15s ease;
+}
+
+.tab-cof:hover{
+    background:#ffffff;
+    color:#003b73;
+}
+
+.tab-cof.activa{
+    background:#ffffff;
+    color:#005da8;
+    box-shadow:0 2px 8px rgba(0,0,0,.10);
+}
+
+.vista-cof{
+    display:none;
+}
+
+.vista-cof.activa{
+    display:block;
+}
+
+.nodos-pendiente{
+    margin-top:18px;
+    padding:18px;
+    border:1px solid #e1e7ee;
+    border-radius:12px;
+    background:white;
+}
+
+.nodos-pendiente h5{
+    color:#003b73;
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+.nodos-pendiente p{
+    margin:0;
+    color:#65727e;
+    font-size:13px;
+}
+
+/* CONFIGURACION */
+
+.config-panel{
+    margin-top:28px;
+    padding:22px;
+    border:1px solid #dbe3ec;
+    border-radius:16px;
+    background:#f8fbff;
+}
+
+.config-titulo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#003b73;
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+.config-seccion{
+    padding:18px;
+    border:1px solid #e1e7ee;
+    border-radius:12px;
+    background:white;
+}
+
+.config-seccion-titulo{
+    color:#003b73;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+.config-descripcion{
+    color:#65727e;
+    font-size:13px;
+    margin-bottom:16px;
+}
+
+.config-opcion{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:13px 14px;
+    margin-bottom:10px;
+    border:1px solid #dce3ea;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.15s ease;
+}
+
+.config-opcion:hover{
+    border-color:#7caed1;
+    background:#f8fbff;
+}
+
+.config-opcion input{
+    margin-top:4px;
+}
+
+.config-opcion strong{
+    display:block;
+    color:#263746;
+}
+
+.config-opcion small{
+    display:block;
+    color:#6c757d;
+    margin-top:2px;
+}
+
+.config-estado{
+    display:none;
+    margin-top:12px;
+    padding:9px 12px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.config-estado.ok{
+    display:block;
+    color:#146c43;
+    background:#d1e7dd;
+}
+
+.config-estado.error{
+    display:block;
+    color:#842029;
+    background:#f8d7da;
+}
+
 </style>
 
 
@@ -281,6 +439,30 @@ Generador de Planillas Operacionales
 
 <div class="card-body p-4">
 
+
+<div class="tabs-cof">
+
+<button
+    type="button"
+    id="tabGenerar"
+    class="tab-cof activa"
+>
+    <i class="bi bi-file-earmark-excel"></i>
+    Generar Planillas
+</button>
+
+<button
+    type="button"
+    id="tabConfiguracion"
+    class="tab-cof"
+>
+    <i class="bi bi-gear"></i>
+    Configuración
+</button>
+
+</div>
+
+<div id="vistaGenerar" class="vista-cof activa">
 
 <h3 class="mb-4">
 
@@ -520,9 +702,620 @@ Generar Planillas
 
 </form>
 
+</div>
+
+<div id="vistaConfiguracion" class="vista-cof">
+
+<h3 class="mb-4">
+    <i class="bi bi-gear"></i>
+    Configuración
+</h3>
+
+        <!-- =====================================================
+             CONFIGURACION GENERAL
+             ===================================================== -->
+
+        <div class="config-panel">
+
+            <div class="config-titulo">
+                <i class="bi bi-sliders"></i>
+                Configuración
+            </div>
+
+            <div class="config-seccion">
+
+                <div class="config-seccion-titulo">
+                    Generación de Planillas
+                </div>
+
+                <div class="config-descripcion">
+                    Seleccione qué tipos de salida se incluirán
+                    al generar las planillas.
+                </div>
+
+                <label class="config-opcion">
+
+                    <input
+                        type="radio"
+                        name="modoSalidas"
+                        id="salidasConVacios"
+                        value="con_vacios"
+                    >
+
+                    <span>
+                        <strong>Comerciales + Vacíos</strong>
+                        <small>
+                            Incluye expediciones comerciales (EXP),
+                            Vacío a Patio (VPA) y Vacío a Cabezal (VEX).
+                        </small>
+                    </span>
+
+                </label>
+
+                <label class="config-opcion">
+
+                    <input
+                        type="radio"
+                        name="modoSalidas"
+                        id="salidasSoloComerciales"
+                        value="solo_comerciales"
+                    >
+
+                    <span>
+                        <strong>Solo comerciales</strong>
+                        <small>
+                            Incluye únicamente expediciones comerciales (EXP).
+                        </small>
+                    </span>
+
+                </label>
+
+                <div
+                    id="estadoConfiguracionPlanillas"
+                    class="config-estado"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CATALOGO DE NODOS
+             ===================================================== -->
+
+        <div class="nodos-pendiente">
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:flex-start;
+                    gap:16px;
+                    flex-wrap:wrap;
+                    margin-bottom:16px;
+                "
+            >
+                <div>
+                    <h5 style="margin-bottom:4px;">
+                        <i class="bi bi-signpost-split"></i>
+                        Catálogo de Nodos
+                    </h5>
+
+                    <p>
+                        Administración de nodos utilizados
+                        en las planillas COF.
+                    </p>
+                </div>
+
+                <div
+                    id="contadorNodos"
+                    class="config-estado"
+                    style="margin:0;"
+                >
+                    Cargando catálogo...
+                </div>
+            </div>
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        minmax(160px, 220px)
+                        minmax(240px, 1fr);
+                    gap:12px;
+                    margin-bottom:16px;
+                "
+            >
+                <div>
+                    <label
+                        for="filtroUnidadNodos"
+                        style="
+                            display:block;
+                            font-size:13px;
+                            font-weight:700;
+                            color:#003b73;
+                            margin-bottom:6px;
+                        "
+                    >
+                        Unidad
+                    </label>
+
+                    <select
+                        id="filtroUnidadNodos"
+                        class="form-select"
+                    >
+                        <option value="">
+                            Todas
+                        </option>
+                        <option value="ALFA">
+                            ALFA
+                        </option>
+                        <option value="OMEGA">
+                            OMEGA
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        for="buscarNodo"
+                        style="
+                            display:block;
+                            font-size:13px;
+                            font-weight:700;
+                            color:#003b73;
+                            margin-bottom:6px;
+                        "
+                    >
+                        Buscar
+                    </label>
+
+                    <input
+                        id="buscarNodo"
+                        type="text"
+                        class="form-control"
+                        placeholder="Código TS, Terminal o Nodo"
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+
+            <div
+                style="
+                    overflow-x:auto;
+                    border:1px solid #e1e7ee;
+                    border-radius:10px;
+                "
+            >
+                <table
+                    class="table table-hover align-middle mb-0"
+                    id="tablaNodos"
+                >
+                    <thead>
+                        <tr>
+                            <th>Unidad</th>
+                            <th>Código TS</th>
+                            <th>Terminal</th>
+                            <th>Nodo</th>
+                            <th style="width:110px;">
+                                Acción
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="cuerpoTablaNodos">
+                        <tr>
+                            <td
+                                colspan="5"
+                                class="text-center py-4"
+                            >
+                                Cargando catálogo...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                id="estadoCatalogoNodos"
+                class="config-estado"
+                style="margin-top:12px;"
+            ></div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CONFIGURACION ANEXO 5 DTPM
+             ===================================================== -->
+
+        <div
+            id="panel-anexo5"
+            style="
+                margin-top: 22px;
+                padding: 22px;
+                border: 1px solid #dbe3ec;
+                border-radius: 14px;
+                background: #f8fbff;
+            "
+        >
+
+            
+            <div
+                id="cabeceraCompactaAnexo5"
+                style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 2px 0 4px 0;
+                "
+            >
+                <div>
+                    <strong
+                        style="
+                            color: #003b71;
+                            font-size: 14px;
+                        "
+                    >
+                        Anexo 5 DTPM
+                    </strong>
+
+                    <span
+                        id="estadoCompactoAnexo5"
+                        style="
+                            margin-left: 12px;
+                            font-size: 12px;
+                            color: #198754;
+                        "
+                    >
+                        U8 Vigente | U9 Vigente
+                    </span>
+                </div>
+
+                <button
+                    id="btnExpandirAnexo5"
+                    type="button"
+                    style="
+                        padding: 6px 14px;
+                        border: 1px solid #90bcdc;
+                        border-radius: 6px;
+                        background: white;
+                        color: #005da8;
+                        font-size: 12px;
+                        font-weight: 700;
+                        cursor: pointer;
+                    "
+                >
+                    Ver
+                </button>
+            </div>
+
+            <div
+                id="contenidoExpandibleAnexo5"
+                style="display:none;"
+            >
+<h2
+                style="
+                    margin-top: 0;
+                    margin-bottom: 8px;
+                    color: #003b71;
+                    font-size: 20px;
+                "
+            >
+                Actualizar Anexo 5 DTPM
+            </h2>
+
+            <p
+                style="
+                    margin-top: 0;
+                    margin-bottom: 18px;
+                    color: #5f6b76;
+                    font-size: 14px;
+                "
+            >
+                Cargue el Anexo 5 unicamente cuando DTPM publique
+                una nueva version. El archivo quedara vigente para
+                todas las generaciones posteriores.
+            </p>
+
+            
+            
+            <style>
+                .a5-resumen {
+                    margin-bottom: 10px;
+                }
+
+                .a5-fila {
+                    display: grid;
+                    grid-template-columns:
+                        minmax(160px, 1.2fr)
+                        110px
+                        minmax(190px, 1fr);
+                    gap: 12px;
+                    align-items: center;
+
+                    padding: 9px 12px;
+                    margin-bottom: 6px;
+
+                    background: #ffffff;
+                    border: 1px solid #e1e6eb;
+                    border-radius: 7px;
+                }
+
+                .a5-nombre {
+                    font-weight: 800;
+                    color: #17324d;
+                    font-size: 14px;
+                }
+
+                .a5-archivo {
+                    margin-top: 2px;
+                    font-size: 11px;
+                    color: #7a8793;
+                }
+
+                .a5-vigente {
+                    font-weight: 700;
+                    font-size: 13px;
+                    color: #198754;
+                }
+
+                .a5-falta {
+                    font-weight: 700;
+                    font-size: 13px;
+                    color: #b36b00;
+                }
+
+                .a5-fecha {
+                    text-align: right;
+                    font-size: 12px;
+                    color: #384550;
+                }
+
+                .a5-acciones {
+                    display: flex;
+                    gap: 8px;
+                    margin-top: 8px;
+                }
+
+                .a5-btn-secundario {
+                    flex: 1;
+                    padding: 8px 10px;
+
+                    background: #ffffff;
+                    color: #005da8;
+
+                    border: 1px solid #90bcdc;
+                    border-radius: 6px;
+
+                    font-size: 12px;
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+
+                .a5-btn-secundario:hover {
+                    background: #eef7fd;
+                }
+
+                #panelHistorialAnexo5 {
+                    display: none;
+
+                    margin-top: 8px;
+                    padding: 8px 12px;
+
+                    background: #ffffff;
+                    border: 1px solid #e1e6eb;
+                    border-radius: 7px;
+                }
+
+                .a5-historial-fila {
+                    display: grid;
+                    grid-template-columns: 105px 135px 1fr;
+                    gap: 10px;
+
+                    padding: 5px 0;
+                    border-bottom: 1px solid #eef1f3;
+
+                    font-size: 11px;
+                    color: #59636d;
+                }
+
+                .a5-historial-fila:last-child {
+                    border-bottom: none;
+                }
+
+                @media (max-width: 700px) {
+
+                    .a5-fila {
+                        grid-template-columns: 1fr;
+                        gap: 4px;
+                    }
+
+                    .a5-fecha {
+                        text-align: left;
+                    }
+
+                    .a5-acciones {
+                        flex-direction: column;
+                    }
+                }
+            </style>
+
+            <div
+                id="resumenAnexo5"
+                class="a5-resumen"
+            >
+
+                <div id="estadoAnexo5"></div>
+
+                <div class="a5-acciones">
+
+                    <button
+                        id="btnMostrarCargaAnexo5"
+                        type="button"
+                        class="a5-btn-secundario"
+                    >
+                        Actualizar Anexo 5
+                    </button>
+
+                    <button
+                        id="btnMostrarHistorialAnexo5"
+                        type="button"
+                        class="a5-btn-secundario"
+                    >
+                        Ver historial
+                    </button>
+
+                </div>
+
+                <div id="panelHistorialAnexo5">
+
+                    <div
+                        style="
+                            font-weight: 700;
+                            color: #17324d;
+                            font-size: 12px;
+                            margin-bottom: 6px;
+                        "
+                    >
+                        Historial Anexo 5
+                    </div>
+
+                    <div id="historialAnexo5"></div>
+
+                </div>
+
+            </div>
+
+<form id="formularioAnexo5">
+
+                <div
+                    style="
+                        display: grid;
+                        grid-template-columns: 1fr 2fr;
+                        gap: 18px;
+                        align-items: end;
+                    "
+                >
+
+                    <div>
+
+                        <label
+                            for="unidadAnexo5"
+                            style="
+                                display: block;
+                                margin-bottom: 7px;
+                                font-weight: 700;
+                            "
+                        >
+                            Unidad
+                        </label>
+
+                        <select
+                            id="unidadAnexo5"
+                            name="unidad"
+                            required
+                            style="
+                                width: 100%;
+                                padding: 10px 12px;
+                                border: 1px solid #d8dee5;
+                                border-radius: 6px;
+                                background: white;
+                            "
+                        >
+                            <option value="">
+                                Seleccione
+                            </option>
+
+                            <option value="U8">
+                                U8 - Alfa
+                            </option>
+
+                            <option value="U9">
+                                U9 - Omega
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label
+                            for="archivoAnexo5"
+                            style="
+                                display: block;
+                                margin-bottom: 7px;
+                                font-weight: 700;
+                            "
+                        >
+                            Archivo Anexo 5
+                        </label>
+
+                        <input
+                            id="archivoAnexo5"
+                            name="archivo"
+                            type="file"
+                            accept=".xlsx"
+                            required
+                            style="
+                                width: 100%;
+                                padding: 7px;
+                                border: 1px solid #d8dee5;
+                                border-radius: 6px;
+                                background: white;
+                                box-sizing: border-box;
+                            "
+                        >
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="btnActualizarAnexo5"
+                    type="submit"
+                    style="
+                        width: 100%;
+                        margin-top: 18px;
+                        padding: 12px;
+                        border: 0;
+                        border-radius: 9px;
+                        background: #005da8;
+                        color: white;
+                        font-size: 15px;
+                        cursor: pointer;
+                    "
+                >
+                    Actualizar Anexo 5
+                </button>
+
+            </form>
+
+            <div
+                id="resultadoAnexo5"
+                style="
+                    display: none;
+                    margin-top: 16px;
+                    padding: 12px 14px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                "
+            ></div>
+
+        
+            </div>
+</div>
 
 
 
+
+
+
+</div>
 
 <div
 
@@ -554,6 +1347,57 @@ class="resultado">
 
 
 <script>
+
+
+const tabGenerar =
+document.getElementById("tabGenerar");
+
+const tabConfiguracion =
+document.getElementById("tabConfiguracion");
+
+const vistaGenerar =
+document.getElementById("vistaGenerar");
+
+const vistaConfiguracion =
+document.getElementById("vistaConfiguracion");
+
+
+function mostrarVistaCOF(vista){
+
+    const configuracion =
+        vista === "configuracion";
+
+    vistaGenerar.classList.toggle(
+        "activa",
+        !configuracion
+    );
+
+    vistaConfiguracion.classList.toggle(
+        "activa",
+        configuracion
+    );
+
+    tabGenerar.classList.toggle(
+        "activa",
+        !configuracion
+    );
+
+    tabConfiguracion.classList.toggle(
+        "activa",
+        configuracion
+    );
+}
+
+
+tabGenerar.addEventListener(
+    "click",
+    ()=>mostrarVistaCOF("generar")
+);
+
+tabConfiguracion.addEventListener(
+    "click",
+    ()=>mostrarVistaCOF("configuracion")
+);
 
 
 const unidad =
@@ -590,9 +1434,141 @@ document.getElementById("archivos");
 const archivoAnexo4 =
 document.getElementById("anexo4");
 
+const salidasConVacios =
+document.getElementById("salidasConVacios");
+
+const salidasSoloComerciales =
+document.getElementById("salidasSoloComerciales");
+
+const estadoConfiguracionPlanillas =
+document.getElementById("estadoConfiguracionPlanillas");
 
 
 
+
+
+
+// ============================
+// CONFIGURACION DE PLANILLAS
+// ============================
+
+function mostrarEstadoConfiguracion(
+    mensaje,
+    tipo
+){
+
+    estadoConfiguracionPlanillas.textContent =
+        mensaje;
+
+    estadoConfiguracionPlanillas.className =
+        "config-estado " + tipo;
+}
+
+
+async function cargarConfiguracionPlanillas(){
+
+    try{
+
+        const respuesta = await fetch(
+            "/api/configuracion/planillas"
+        );
+
+        const data = await respuesta.json();
+
+        if(!respuesta.ok || !data.ok){
+            throw new Error(
+                data.error
+                || "No fue posible cargar la configuración."
+            );
+        }
+
+        const incluirVacios =
+            data.configuracion.incluir_vacios === true;
+
+        salidasConVacios.checked =
+            incluirVacios;
+
+        salidasSoloComerciales.checked =
+            !incluirVacios;
+
+    }
+    catch(error){
+
+        mostrarEstadoConfiguracion(
+            error.message,
+            "error"
+        );
+    }
+}
+
+
+async function guardarConfiguracionPlanillas(
+    incluirVacios
+){
+
+    try{
+
+        const respuesta = await fetch(
+            "/api/configuracion/planillas",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    incluir_vacios: incluirVacios
+                })
+            }
+        );
+
+        const data = await respuesta.json();
+
+        if(!respuesta.ok || !data.ok){
+            throw new Error(
+                data.error
+                || "No fue posible guardar la configuración."
+            );
+        }
+
+        mostrarEstadoConfiguracion(
+            "Configuración guardada correctamente.",
+            "ok"
+        );
+
+    }
+    catch(error){
+
+        mostrarEstadoConfiguracion(
+            error.message,
+            "error"
+        );
+
+        await cargarConfiguracionPlanillas();
+    }
+}
+
+
+salidasConVacios.addEventListener(
+    "change",
+    ()=>{
+        if(salidasConVacios.checked){
+            guardarConfiguracionPlanillas(true);
+        }
+    }
+);
+
+
+salidasSoloComerciales.addEventListener(
+    "change",
+    ()=>{
+        if(salidasSoloComerciales.checked){
+            guardarConfiguracionPlanillas(false);
+        }
+    }
+);
+
+
+cargarConfiguracionPlanillas();
 
 
 // ============================
@@ -1237,6 +2213,1011 @@ function limpiarFormulario(){
 
 }
 
+
+
+
+
+        // =====================================================
+        // FORMULARIO ANEXO 5 DTPM
+        // =====================================================
+
+        const formularioAnexo5 =
+            document.getElementById("formularioAnexo5");
+
+        const unidadAnexo5 =
+            document.getElementById("unidadAnexo5");
+
+        const archivoAnexo5 =
+            document.getElementById("archivoAnexo5");
+
+        const btnActualizarAnexo5 =
+            document.getElementById("btnActualizarAnexo5");
+
+        const resultadoAnexo5 =
+            document.getElementById("resultadoAnexo5");
+
+
+        if (formularioAnexo5) {
+
+            formularioAnexo5.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+                    resultadoAnexo5.style.display = "block";
+                    resultadoAnexo5.style.background = "#fff3cd";
+                    resultadoAnexo5.style.color = "#664d03";
+                    resultadoAnexo5.textContent =
+                        "Validando y actualizando Anexo 5...";
+
+                    btnActualizarAnexo5.disabled = true;
+                    btnActualizarAnexo5.textContent =
+                        "Actualizando...";
+
+                    try {
+
+                        if (!unidadAnexo5.value) {
+
+                            throw new Error(
+                                "Debe seleccionar una unidad."
+                            );
+
+                        }
+
+                        if (
+                            !archivoAnexo5.files
+                            ||
+                            archivoAnexo5.files.length === 0
+                        ) {
+
+                            throw new Error(
+                                "Debe seleccionar un archivo Anexo 5."
+                            );
+
+                        }
+
+                        const archivo =
+                            archivoAnexo5.files[0];
+
+                        if (
+                            !archivo.name
+                                .toLowerCase()
+                                .endsWith(".xlsx")
+                        ) {
+
+                            throw new Error(
+                                "El Anexo 5 debe ser un archivo .xlsx."
+                            );
+
+                        }
+
+                        const formData = new FormData();
+
+                        formData.append(
+                            "unidad",
+                            unidadAnexo5.value
+                        );
+
+                        formData.append(
+                            "archivo",
+                            archivo
+                        );
+
+                        const response = await fetch(
+                            "/api/anexo5/actualizar",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.ok) {
+
+                            throw new Error(
+                                data.detail
+                                || data.mensaje
+                                || "No fue posible actualizar el Anexo 5."
+                            );
+
+                        }
+
+                        resultadoAnexo5.style.background =
+                            "#d1e7dd";
+
+                        resultadoAnexo5.style.color =
+                            "#0f5132";
+
+                        resultadoAnexo5.innerHTML =
+                            "<strong>Anexo 5 actualizado correctamente</strong>"
+                            + "<br>"
+                            + "Unidad: "
+                            + data.unidad
+                            + "<br>"
+                            + "Catalogo vigente: "
+                            + data.catalogo_vigente
+                            + "<br>"
+                            + "Registros validos: "
+                            + data.registros_validos
+                            + "<br>"
+                            + "Claves IP: "
+                            + data.claves_indice;
+
+                        archivoAnexo5.value = "";
+
+                        await cargarResumenAnexo5();
+
+                    }
+                    catch (error) {
+
+                        resultadoAnexo5.style.background =
+                            "#f8d7da";
+
+                        resultadoAnexo5.style.color =
+                            "#842029";
+
+                        resultadoAnexo5.textContent =
+                            "ERROR: " + error.message;
+
+                    }
+                    finally {
+
+                        btnActualizarAnexo5.disabled = false;
+
+                        btnActualizarAnexo5.textContent =
+                            "Actualizar Anexo 5";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        // =====================================================
+        // ESTADO E HISTORIAL ANEXO 5 - COMPACTO
+        // =====================================================
+
+        async function cargarResumenAnexo5() {
+
+            const estado =
+                document.getElementById("estadoAnexo5");
+
+            const historial =
+                document.getElementById("historialAnexo5");
+
+            const formulario =
+                document.getElementById("formularioAnexo5");
+
+            const botonCarga =
+                document.getElementById(
+                    "btnMostrarCargaAnexo5"
+                );
+
+            if (!estado || !historial) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    "/api/anexo5/resumen"
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.ok) {
+                    throw new Error(
+                        "No fue posible consultar Anexo 5."
+                    );
+                }
+
+                let htmlEstado = "";
+                let htmlHistorial = "";
+
+                let totalCargados = 0;
+
+                for (const unidad of ["U8", "U9"]) {
+
+                    const info =
+                        data.unidades[unidad];
+
+                    const empresa =
+                        unidad === "U8"
+                            ? "Alfa"
+                            : "Omega";
+
+                    if (info.actual) {
+
+                        totalCargados++;
+
+                        htmlEstado += `
+                            <div class="a5-fila">
+
+                                <div>
+                                    <div class="a5-nombre">
+                                        ${unidad} - ${empresa}
+                                    </div>
+
+                                    <div class="a5-archivo">
+                                        ${info.actual.archivo}
+                                    </div>
+                                </div>
+
+                                <div class="a5-vigente">
+                                    &#9679; Vigente
+                                </div>
+
+                                <div class="a5-fecha">
+                                    Ultima actualizacion:
+                                    <strong>
+                                        ${info.actual.fecha}
+                                    </strong>
+                                </div>
+
+                            </div>
+                        `;
+
+                    }
+                    else {
+
+                        htmlEstado += `
+                            <div class="a5-fila">
+
+                                <div class="a5-nombre">
+                                    ${unidad} - ${empresa}
+                                </div>
+
+                                <div class="a5-falta">
+                                    Pendiente
+                                </div>
+
+                                <div class="a5-fecha">
+                                    Sin Anexo 5 cargado
+                                </div>
+
+                            </div>
+                        `;
+                    }
+
+                    if (
+                        info.historial
+                        &&
+                        info.historial.length > 0
+                    ) {
+
+                        for (
+                            const item
+                            of info.historial
+                        ) {
+
+                            htmlHistorial += `
+                                <div class="a5-historial-fila">
+
+                                    <strong>
+                                        ${unidad}
+                                    </strong>
+
+                                    <span>
+                                        ${item.fecha}
+                                    </span>
+
+                                    <span>
+                                        ${item.archivo}
+                                    </span>
+
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                estado.innerHTML =
+                    htmlEstado;
+
+                historial.innerHTML =
+                    htmlHistorial
+                    || `
+                        <div
+                            style="
+                                font-size: 12px;
+                                color: #77818a;
+                            "
+                        >
+                            Sin versiones anteriores.
+                        </div>
+                    `;
+
+                // Si U8 y U9 estan cargados,
+                // el formulario queda cerrado.
+
+                if (totalCargados === 2) {
+
+                    formulario.style.display =
+                        "none";
+
+                    botonCarga.textContent =
+                        "Actualizar Anexo 5";
+
+                }
+                else {
+
+                    formulario.style.display =
+                        "block";
+
+                    botonCarga.textContent =
+                        "Ocultar carga";
+
+                }
+
+            }
+            catch (error) {
+
+                estado.innerHTML = `
+                    <div
+                        style="
+                            padding: 8px;
+                            color: #842029;
+                            font-size: 12px;
+                        "
+                    >
+                        ERROR: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+
+        // =====================================================
+        // MOSTRAR / OCULTAR CARGA
+        // =====================================================
+
+        const btnMostrarCargaAnexo5 =
+            document.getElementById(
+                "btnMostrarCargaAnexo5"
+            );
+
+        if (btnMostrarCargaAnexo5) {
+
+            btnMostrarCargaAnexo5.addEventListener(
+                "click",
+                function () {
+
+                    const formulario =
+                        document.getElementById(
+                            "formularioAnexo5"
+                        );
+
+                    const oculto =
+                        formulario.style.display === "none"
+                        ||
+                        getComputedStyle(formulario).display
+                            === "none";
+
+                    if (oculto) {
+
+                        formulario.style.display =
+                            "block";
+
+                        btnMostrarCargaAnexo5.textContent =
+                            "Ocultar carga";
+
+                    }
+                    else {
+
+                        formulario.style.display =
+                            "none";
+
+                        btnMostrarCargaAnexo5.textContent =
+                            "Actualizar Anexo 5";
+
+                    }
+                }
+            );
+        }
+
+
+        // =====================================================
+        // MOSTRAR / OCULTAR HISTORIAL
+        // =====================================================
+
+        const btnMostrarHistorialAnexo5 =
+            document.getElementById(
+                "btnMostrarHistorialAnexo5"
+            );
+
+        if (btnMostrarHistorialAnexo5) {
+
+            btnMostrarHistorialAnexo5.addEventListener(
+                "click",
+                function () {
+
+                    const panel =
+                        document.getElementById(
+                            "panelHistorialAnexo5"
+                        );
+
+                    const oculto =
+                        panel.style.display === "none"
+                        ||
+                        getComputedStyle(panel).display
+                            === "none";
+
+                    if (oculto) {
+
+                        panel.style.display =
+                            "block";
+
+                        btnMostrarHistorialAnexo5.textContent =
+                            "Ocultar historial";
+
+                    }
+                    else {
+
+                        panel.style.display =
+                            "none";
+
+                        btnMostrarHistorialAnexo5.textContent =
+                            "Ver historial";
+
+                    }
+                }
+            );
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            cargarResumenAnexo5
+        );
+
+
+
+        // =====================================================
+        // PANEL ANEXO 5 COLAPSABLE
+        // =====================================================
+
+        const btnExpandirAnexo5 =
+            document.getElementById(
+                "btnExpandirAnexo5"
+            );
+
+        const contenidoExpandibleAnexo5 =
+            document.getElementById(
+                "contenidoExpandibleAnexo5"
+            );
+
+        if (
+            btnExpandirAnexo5
+            &&
+            contenidoExpandibleAnexo5
+        ) {
+
+            btnExpandirAnexo5.addEventListener(
+                "click",
+                function () {
+
+                    const oculto =
+                        contenidoExpandibleAnexo5
+                            .style.display === "none"
+                        ||
+                        getComputedStyle(
+                            contenidoExpandibleAnexo5
+                        ).display === "none";
+
+                    if (oculto) {
+
+                        contenidoExpandibleAnexo5
+                            .style.display = "block";
+
+                        btnExpandirAnexo5.textContent =
+                            "Ocultar";
+
+                    }
+                    else {
+
+                        contenidoExpandibleAnexo5
+                            .style.display = "none";
+
+                        btnExpandirAnexo5.textContent =
+                            "Ver";
+
+                    }
+                }
+            );
+        }
+
+
+
+// ============================================================
+// MODULO CATALOGO NODOS COF
+// ============================================================
+
+const filtroUnidadNodos =
+    document.getElementById("filtroUnidadNodos");
+
+const buscarNodo =
+    document.getElementById("buscarNodo");
+
+const cuerpoTablaNodos =
+    document.getElementById("cuerpoTablaNodos");
+
+const contadorNodos =
+    document.getElementById("contadorNodos");
+
+const estadoCatalogoNodos =
+    document.getElementById("estadoCatalogoNodos");
+
+
+let catalogoNodos = [];
+
+
+function escaparHTML(valor){
+
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function establecerEstadoNodos(
+    mensaje,
+    tipo=""
+){
+
+    estadoCatalogoNodos.textContent =
+        mensaje || "";
+
+    estadoCatalogoNodos.className =
+        "config-estado" +
+        (tipo ? " " + tipo : "");
+}
+
+
+function obtenerNodosFiltrados(){
+
+    const unidad =
+        filtroUnidadNodos.value
+            .trim()
+            .toUpperCase();
+
+    const busqueda =
+        buscarNodo.value
+            .trim()
+            .toUpperCase();
+
+    return catalogoNodos.filter(
+        registro => {
+
+            if(
+                unidad &&
+                String(
+                    registro.unidad || ""
+                ).toUpperCase() !== unidad
+            ){
+                return false;
+            }
+
+            if(!busqueda){
+                return true;
+            }
+
+            const textoRegistro = [
+                registro.unidad,
+                registro.codigo,
+                registro.terminal,
+                registro.nodo
+            ]
+            .join(" ")
+            .toUpperCase();
+
+            return textoRegistro.includes(
+                busqueda
+            );
+        }
+    );
+}
+
+
+function renderizarCatalogoNodos(){
+
+    const registros =
+        obtenerNodosFiltrados();
+
+    contadorNodos.textContent =
+        `${registros.length} de ${catalogoNodos.length} registros`;
+
+    if(registros.length === 0){
+
+        cuerpoTablaNodos.innerHTML = `
+            <tr>
+                <td
+                    colspan="5"
+                    class="text-center py-4"
+                >
+                    No se encontraron registros.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    cuerpoTablaNodos.innerHTML =
+        registros.map(
+            registro => {
+
+                const unidad =
+                    escaparHTML(
+                        registro.unidad
+                    );
+
+                const codigo =
+                    escaparHTML(
+                        registro.codigo
+                    );
+
+                const terminal =
+                    escaparHTML(
+                        registro.terminal
+                    );
+
+                const nodo =
+                    escaparHTML(
+                        registro.nodo
+                    );
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>
+                                ${unidad}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${codigo}
+                        </td>
+
+                        <td>
+                            ${terminal}
+                        </td>
+
+                        <td>
+                            <span
+                                class="texto-nodo"
+                            >
+                                ${nodo}
+                            </span>
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="
+                                    btn
+                                    btn-sm
+                                    btn-outline-primary
+                                    btn-editar-nodo
+                                "
+                                data-unidad="${unidad}"
+                                data-codigo="${codigo}"
+                            >
+                                <i
+                                    class="bi bi-pencil"
+                                ></i>
+                                Editar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+        )
+        .join("");
+}
+
+
+async function cargarCatalogoNodos(){
+
+    contadorNodos.textContent =
+        "Cargando catálogo...";
+
+    establecerEstadoNodos("");
+
+    try{
+
+        const respuesta = await fetch(
+            "/api/configuracion/nodos"
+        );
+
+        const data =
+            await respuesta.json();
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+            throw new Error(
+                data.error ||
+                "No fue posible cargar el catálogo."
+            );
+        }
+
+        catalogoNodos =
+            Array.isArray(data.registros)
+                ? data.registros
+                : [];
+
+        renderizarCatalogoNodos();
+
+    }catch(error){
+
+        catalogoNodos = [];
+
+        contadorNodos.textContent =
+            "Error al cargar";
+
+        cuerpoTablaNodos.innerHTML = `
+            <tr>
+                <td
+                    colspan="5"
+                    class="text-center py-4"
+                >
+                    No fue posible cargar
+                    el Catálogo de Nodos.
+                </td>
+            </tr>
+        `;
+
+        establecerEstadoNodos(
+            error.message,
+            "error"
+        );
+    }
+}
+
+
+function iniciarEdicionNodo(boton){
+
+    const unidad =
+        boton.dataset.unidad;
+
+    const codigo =
+        boton.dataset.codigo;
+
+    const registro =
+        catalogoNodos.find(
+            item =>
+                item.unidad === unidad &&
+                item.codigo === codigo
+        );
+
+    if(!registro){
+        return;
+    }
+
+    const fila =
+        boton.closest("tr");
+
+    const celdaNodo =
+        fila.querySelector(
+            ".texto-nodo"
+        ).parentElement;
+
+    const nodoActual =
+        registro.nodo || "";
+
+    celdaNodo.innerHTML = `
+        <input
+            type="text"
+            class="
+                form-control
+                form-control-sm
+                input-editar-nodo
+            "
+            value="${escaparHTML(nodoActual)}"
+        >
+    `;
+
+    boton.outerHTML = `
+        <div
+            class="d-flex gap-1"
+        >
+            <button
+                type="button"
+                class="
+                    btn
+                    btn-sm
+                    btn-success
+                    btn-guardar-nodo
+                "
+                data-unidad="${escaparHTML(unidad)}"
+                data-codigo="${escaparHTML(codigo)}"
+            >
+                Guardar
+            </button>
+
+            <button
+                type="button"
+                class="
+                    btn
+                    btn-sm
+                    btn-outline-secondary
+                    btn-cancelar-nodo
+                "
+            >
+                Cancelar
+            </button>
+        </div>
+    `;
+
+    const input =
+        fila.querySelector(
+            ".input-editar-nodo"
+        );
+
+    input.focus();
+    input.select();
+}
+
+
+async function guardarNodoEditado(boton){
+
+    const fila =
+        boton.closest("tr");
+
+    const input =
+        fila.querySelector(
+            ".input-editar-nodo"
+        );
+
+    const unidad =
+        boton.dataset.unidad;
+
+    const codigo =
+        boton.dataset.codigo;
+
+    const nodo =
+        input.value.trim();
+
+    if(!nodo){
+
+        establecerEstadoNodos(
+            "El Nodo no puede quedar vacío.",
+            "error"
+        );
+
+        input.focus();
+        return;
+    }
+
+    boton.disabled = true;
+    boton.textContent = "Guardando...";
+
+    try{
+
+        const respuesta = await fetch(
+            "/api/configuracion/nodos",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    unidad,
+                    codigo,
+                    nodo
+                })
+            }
+        );
+
+        const data =
+            await respuesta.json();
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+            throw new Error(
+                data.error ||
+                "No fue posible guardar el Nodo."
+            );
+        }
+
+        const registro =
+            catalogoNodos.find(
+                item =>
+                    item.unidad === unidad &&
+                    item.codigo === codigo
+            );
+
+        if(registro){
+            registro.nodo =
+                data.registro.nodo;
+        }
+
+        renderizarCatalogoNodos();
+
+        establecerEstadoNodos(
+            `${unidad} / ${codigo}: Nodo actualizado correctamente.`,
+            "ok"
+        );
+
+    }catch(error){
+
+        boton.disabled = false;
+        boton.textContent = "Guardar";
+
+        establecerEstadoNodos(
+            error.message,
+            "error"
+        );
+    }
+}
+
+
+filtroUnidadNodos.addEventListener(
+    "change",
+    renderizarCatalogoNodos
+);
+
+
+buscarNodo.addEventListener(
+    "input",
+    renderizarCatalogoNodos
+);
+
+
+cuerpoTablaNodos.addEventListener(
+    "click",
+    event => {
+
+        const editar =
+            event.target.closest(
+                ".btn-editar-nodo"
+            );
+
+        if(editar){
+            iniciarEdicionNodo(
+                editar
+            );
+            return;
+        }
+
+        const guardar =
+            event.target.closest(
+                ".btn-guardar-nodo"
+            );
+
+        if(guardar){
+            guardarNodoEditado(
+                guardar
+            );
+            return;
+        }
+
+        const cancelar =
+            event.target.closest(
+                ".btn-cancelar-nodo"
+            );
+
+        if(cancelar){
+            renderizarCatalogoNodos();
+            establecerEstadoNodos("");
+        }
+    }
+);
+
+
+cargarCatalogoNodos();
 
 
 </script>

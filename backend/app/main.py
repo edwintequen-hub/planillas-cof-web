@@ -1,6 +1,5 @@
-﻿from pathlib import Path
+from pathlib import Path
 from .zip import crear_zip_planillas
-from .memoria_diag import memoria_actual
 from .limpieza import limpiar_salida_unidad
 
 import shutil
@@ -36,6 +35,16 @@ from .config import (
     OUTPUT_DIR,
 )
 
+from .catalogo_nodos import (
+    obtener_catalogo,
+    actualizar_nodo,
+)
+
+from .configuracion_planillas import (
+    obtener_configuracion,
+    actualizar_incluir_vacios,
+)
+
 
 from .info import (
     obtener_unidades,
@@ -53,6 +62,11 @@ from .generador import (
 
 from .anexo4 import (
     validar_unidad_anexo4,
+)
+
+from .anexo5 import (
+    leer_anexo5,
+    crear_indice_anexo5_ts,
 )
 
 
@@ -377,6 +391,564 @@ def api_terminal(
 # GENERAR PLANILLAS
 # ==========================================================
 
+
+# ==========================================================
+# ACTUALIZAR ANEXO 5 VIGENTE
+# ==========================================================
+
+
+# ==========================================================
+# CONFIGURACION OPERACIONAL DE PLANILLAS
+# ==========================================================
+
+
+
+@app.get("/api/configuracion/nodos")
+def consultar_catalogo_nodos(
+    unidad: Optional[str] = None
+):
+
+    registros = obtener_catalogo()
+
+    if unidad:
+        unidad_normalizada = (
+            str(unidad)
+            .strip()
+            .upper()
+        )
+
+        registros = [
+            registro
+            for registro in registros
+            if registro.get(
+                "unidad",
+                ""
+            ).upper() == unidad_normalizada
+        ]
+
+    return {
+        "ok": True,
+        "total": len(registros),
+        "registros": registros,
+    }
+
+
+@app.post("/api/configuracion/nodos")
+async def modificar_nodo(
+    request: Request
+):
+
+    try:
+        datos = await request.json()
+
+    except Exception:
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": "JSON invalido.",
+            }
+        )
+
+    unidad = str(
+        datos.get(
+            "unidad",
+            ""
+        )
+    ).strip()
+
+    codigo = str(
+        datos.get(
+            "codigo",
+            ""
+        )
+    ).strip()
+
+    nodo = str(
+        datos.get(
+            "nodo",
+            ""
+        )
+    ).strip()
+
+    if not unidad or not codigo or not nodo:
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    "unidad, codigo y nodo son obligatorios.",
+            }
+        )
+
+    try:
+
+        registro = actualizar_nodo(
+            unidad,
+            codigo,
+            nodo,
+        )
+
+    except ValueError as exc:
+
+        return JSONResponse(
+            status_code=404,
+            content={
+                "ok": False,
+                "error": str(exc),
+            }
+        )
+
+    return {
+        "ok": True,
+        "registro": registro,
+    }
+
+
+@app.get("/api/configuracion/planillas")
+def consultar_configuracion_planillas():
+
+    configuracion = obtener_configuracion()
+
+    return {
+        "ok": True,
+        "configuracion": configuracion,
+    }
+
+
+@app.post("/api/configuracion/planillas")
+async def guardar_configuracion_planillas(
+    request: Request
+):
+
+    try:
+
+        datos = await request.json()
+
+    except Exception:
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": "JSON invalido."
+            }
+        )
+
+    incluir_vacios = datos.get(
+        "incluir_vacios"
+    )
+
+    if not isinstance(incluir_vacios, bool):
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    "incluir_vacios debe ser true o false."
+            }
+        )
+
+    configuracion = actualizar_incluir_vacios(
+        incluir_vacios
+    )
+
+    return {
+        "ok": True,
+        "configuracion": configuracion,
+    }
+
+
+# ==========================================================
+# ESTADO ANEXO 5 VIGENTE
+# ==========================================================
+
+@app.get("/api/anexo5/estado")
+def estado_anexo5():
+
+    from datetime import datetime
+
+    catalogos_dir = (
+        Path(__file__).resolve().parent.parent
+        / "catalogos"
+    )
+
+    resultado = {}
+
+    for unidad in ("U8", "U9"):
+
+        archivo = (
+            catalogos_dir
+            / f"Anexo5_{unidad}.xlsx"
+        )
+
+        if archivo.exists():
+
+            fecha = datetime.fromtimestamp(
+                archivo.stat().st_mtime
+            )
+
+            resultado[unidad] = {
+                "cargado": True,
+                "archivo": archivo.name,
+                "ultima_actualizacion":
+                    fecha.strftime("%d-%m-%Y %H:%M"),
+            }
+
+        else:
+
+            resultado[unidad] = {
+                "cargado": False,
+                "archivo": None,
+                "ultima_actualizacion": None,
+            }
+
+    return {
+        "ok": True,
+        "catalogos": resultado,
+    }
+
+
+
+# ==========================================================
+# RESUMEN E HISTORIAL ANEXO 5
+# ==========================================================
+
+@app.get("/api/anexo5/resumen")
+def resumen_anexo5():
+
+    from datetime import datetime
+
+    catalogos_dir = (
+        Path(__file__).resolve().parent.parent
+        / "catalogos"
+    )
+
+    historico_dir = (
+        catalogos_dir
+        / "historico_anexo5"
+    )
+
+    resultado = {}
+
+    for unidad in ("U8", "U9"):
+
+        actual = (
+            catalogos_dir
+            / f"Anexo5_{unidad}.xlsx"
+        )
+
+        actual_info = None
+
+        if actual.exists():
+
+            fecha = datetime.fromtimestamp(
+                actual.stat().st_mtime
+            )
+
+            actual_info = {
+                "archivo": actual.name,
+                "fecha":
+                    fecha.strftime("%d-%m-%Y %H:%M"),
+                "cargado": True,
+            }
+
+        historial = []
+
+        if historico_dir.exists():
+
+            archivos = sorted(
+                historico_dir.glob(
+                    f"Anexo5_{unidad}_*.xlsx"
+                ),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True
+            )
+
+            for archivo in archivos[:30]:
+
+                fecha = datetime.fromtimestamp(
+                    archivo.stat().st_mtime
+                )
+
+                historial.append({
+                    "archivo": archivo.name,
+                    "fecha":
+                        fecha.strftime("%d-%m-%Y %H:%M"),
+                })
+
+        resultado[unidad] = {
+            "actual": actual_info,
+            "historial": historial,
+        }
+
+    return {
+        "ok": True,
+        "unidades": resultado,
+    }
+
+
+@app.post("/api/anexo5/actualizar")
+async def actualizar_anexo5(
+    archivo: UploadFile = File(...),
+    unidad: str = Form(...)
+):
+
+    unidad_normalizada = str(
+        unidad or ""
+    ).strip().upper()
+
+    equivalencias = {
+        "U8": "U8",
+        "8": "U8",
+        "ALFA": "U8",
+        "ALFAU8": "U8",
+
+        "U9": "U9",
+        "9": "U9",
+        "OMEGA": "U9",
+        "OMEGAU9": "U9",
+    }
+
+    unidad_tecnica = equivalencias.get(
+        unidad_normalizada
+    )
+
+    if unidad_tecnica not in ("U8", "U9"):
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    "Unidad invalida. Debe seleccionar U8 o U9."
+            }
+        )
+
+    if (
+        archivo is None
+        or not archivo.filename
+    ):
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    "Debe seleccionar un archivo Anexo 5."
+            }
+        )
+
+    if not archivo.filename.lower().endswith(".xlsx"):
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    "El Anexo 5 debe ser un archivo .xlsx."
+            }
+        )
+
+    catalogos_dir = (
+        Path(__file__).resolve().parent.parent
+        / "catalogos"
+    )
+
+    catalogos_dir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    destino = (
+        catalogos_dir
+        / f"Anexo5_{unidad_tecnica}.xlsx"
+    )
+
+    historico_dir = (
+        catalogos_dir
+        / "historico_anexo5"
+    )
+
+    historico_dir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    temporal = (
+        UPLOAD_DIR
+        / f"anexo5_validacion_{uuid.uuid4().hex}.xlsx"
+    )
+
+    try:
+
+        # ----------------------------------------------
+        # Guardar primero como temporal
+        # ----------------------------------------------
+
+        with open(temporal, "wb") as buffer:
+
+            shutil.copyfileobj(
+                archivo.file,
+                buffer
+            )
+
+        # ----------------------------------------------
+        # VALIDACION REAL CON MOTOR ANEXO 5
+        # ----------------------------------------------
+
+        registros = leer_anexo5(
+            temporal
+        )
+
+        if not registros:
+
+            raise ValueError(
+                "El archivo no contiene registros "
+                "vigentes validos para IP."
+            )
+
+        indice = crear_indice_anexo5_ts(
+            registros
+        )
+
+        if not indice:
+
+            raise ValueError(
+                "No fue posible construir el indice "
+                "tecnico del Anexo 5."
+            )
+
+        # ----------------------------------------------
+        # VALIDAR QUE EL ARCHIVO CORRESPONDA A LA UNIDAD
+        # ----------------------------------------------
+
+        unidades_archivo = {
+            str(
+                registro.get("unidad") or ""
+            ).strip().upper()
+            for registro in registros
+            if registro.get("unidad") is not None
+        }
+
+        unidades_normalizadas = set()
+
+        for valor in unidades_archivo:
+
+            valor_limpio = (
+                valor
+                .replace(" ", "")
+            )
+
+            if valor_limpio in (
+                "U8",
+                "8",
+                "ALFA",
+                "ALFAU8",
+            ):
+                unidades_normalizadas.add("U8")
+
+            elif valor_limpio in (
+                "U9",
+                "9",
+                "OMEGA",
+                "OMEGAU9",
+            ):
+                unidades_normalizadas.add("U9")
+
+        if (
+            unidades_normalizadas
+            and unidad_tecnica not in unidades_normalizadas
+        ):
+
+            raise ValueError(
+                f"El archivo seleccionado no corresponde "
+                f"a la unidad {unidad_tecnica}. "
+                f"Unidades detectadas: "
+                f"{sorted(unidades_normalizadas)}"
+            )
+
+        # ----------------------------------------------
+        # BACKUP DEL CATALOGO VIGENTE ANTERIOR
+        # ----------------------------------------------
+
+        backup_creado = None
+
+        if destino.exists():
+
+            marca = time.strftime(
+                "%Y%m%d_%H%M%S"
+            )
+
+            backup_creado = (
+                historico_dir
+                / (
+                    f"Anexo5_{unidad_tecnica}_"
+                    f"{marca}.xlsx"
+                )
+            )
+
+            shutil.copy2(
+                destino,
+                backup_creado
+            )
+
+        # ----------------------------------------------
+        # REEMPLAZAR SOLO DESPUES DE VALIDAR
+        # ----------------------------------------------
+
+        shutil.copy2(
+            temporal,
+            destino
+        )
+
+        return {
+            "ok": True,
+            "unidad": unidad_tecnica,
+            "archivo_original": archivo.filename,
+            "catalogo_vigente": destino.name,
+            "registros_validos": len(registros),
+            "claves_indice": len(indice),
+            "backup_anterior":
+                backup_creado.name
+                if backup_creado
+                else None,
+            "mensaje":
+                (
+                    f"Anexo 5 {unidad_tecnica} actualizado "
+                    f"correctamente y queda vigente hasta "
+                    f"la proxima actualizacion DTPM."
+                )
+        }
+
+    except Exception as exc:
+
+        traceback.print_exc()
+
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error":
+                    f"No se actualizo el Anexo 5: {exc}"
+            }
+        )
+
+    finally:
+
+        try:
+
+            if temporal.exists():
+                temporal.unlink()
+
+        except Exception:
+
+            pass
+
+
 @app.post("/generar")
 async def generar(
 
@@ -394,7 +966,6 @@ async def generar(
 
 
     print("ENTRO AL ENDPOINT GENERAR")
-    memoria_actual("01_ENTRADA_GENERAR")
 
     # Normalizar entradas
     archivos = [a for a in (archivos or []) if a and a.filename]
@@ -465,8 +1036,6 @@ async def generar(
 
             archivos_guardados.append(ruta)
 
-        memoria_actual("02_DESPUES_GUARDAR_UPLOAD")
-
 
 
         print("ARCHIVOS TEMPORALES:")
@@ -535,8 +1104,6 @@ async def generar(
                 )
 
         # ==================================
-        memoria_actual("03_DESPUES_VALIDAR_UNIDAD")
-
         # LIMPIAR ARCHIVOS ANTERIORES
         # ==================================
 
@@ -550,12 +1117,20 @@ async def generar(
 
 
         # ==================================
-        memoria_actual("04_DESPUES_LIMPIAR_SALIDA")
-
         # GENERAR
         # ==================================
 
-        memoria_actual("05_ANTES_GENERAR_PLANILLAS")
+        configuracion_planillas = obtener_configuracion()
+
+        incluir_vacios = configuracion_planillas.get(
+            "incluir_vacios",
+            True
+        )
+
+        print("==============================")
+        print("CONFIGURACION ACTIVA")
+        print("Incluir vacios:", incluir_vacios)
+        print("==============================")
 
         resultado = generar_planillas(
 
@@ -573,12 +1148,11 @@ async def generar(
 
             tipo_dia,
 
-            usar_anexo4=tiene_anexo4
+            usar_anexo4=tiene_anexo4,
+
+            incluir_vacios=incluir_vacios
 
         )
-
-        memoria_actual("06_DESPUES_GENERAR_PLANILLAS")
-        memoria_actual("07_ANTES_ZIP")
 
         nombre_zip = crear_zip_planillas(
 
@@ -587,8 +1161,6 @@ async def generar(
             unidad
 
         )
-
-        memoria_actual("08_DESPUES_ZIP")
 
         print("==============================")
         print("ZIP GENERADO:")
@@ -691,8 +1263,6 @@ async def generar(
 
     except Exception as e:
 
-        memoria_actual("90_EXCEPTION")
-
 
         print("==============================")
         print("ERROR GENERADOR")
@@ -721,8 +1291,6 @@ async def generar(
 
     finally:
 
-        memoria_actual("98_ENTRADA_FINALLY")
-
 
         for archivo in archivos_guardados:
 
@@ -731,8 +1299,6 @@ async def generar(
 
 
                 archivo.unlink()
-
-        memoria_actual("99_SALIDA_FINALLY")
 
 # ==========================================================
 # DESCARGAR ZIP

@@ -86,23 +86,58 @@ def formato_tipo_dia(valor):
 
 def leer_anexo4(ruta_excel):
 
+    from openpyxl import load_workbook
+
     ruta = Path(ruta_excel)
 
-    df = pd.read_excel(
+    if not ruta.exists():
+        raise FileNotFoundError(
+            f"No existe Anexo 4: {ruta}"
+        )
+
+    print("Abriendo Anexo 4...")
+
+    wb = load_workbook(
         ruta,
-        sheet_name="Tabla Horaria",
-        header=6
+        read_only=True,
+        data_only=True,
     )
 
-    if "CODIGO TS SERVICIO" not in df.columns:
+    if "Tabla Horaria" not in wb.sheetnames:
+        wb.close()
 
-        return (
-            False,
-            "El archivo no contiene la columna CODIGO TS SERVICIO."
+        raise ValueError(
+            "El archivo no contiene la hoja Tabla Horaria."
+        )
+
+    ws = wb["Tabla Horaria"]
+
+    print("Hoja:", ws.title)
+    print("Leyendo encabezados...")
+
+    fila_encabezado = 7
+
+    encabezados = {}
+
+    for celda in next(
+        ws.iter_rows(
+            min_row=fila_encabezado,
+            max_row=fila_encabezado,
+            values_only=False,
+        )
+    ):
+        if celda.value is None:
+            continue
+
+        nombre = str(
+            celda.value
+        ).strip()
+
+        encabezados[nombre] = (
+            celda.column - 1
         )
 
     columnas_obligatorias = [
-
         "UNIDAD DE SERVICIO",
         "BUS_LOGICO",
         "CODIGO TS SERVICIO",
@@ -117,62 +152,92 @@ def leer_anexo4(ruta_excel):
         "TIPO_BUS",
     ]
 
-    if not all(c in df.columns for c in columnas_obligatorias):
+    faltantes = [
+        c
+        for c in columnas_obligatorias
+        if c not in encabezados
+    ]
+
+    if faltantes:
+        wb.close()
 
         raise ValueError(
-            "El archivo seleccionado no corresponde a un Anexo 4 válido."
+            "Faltan columnas obligatorias Anexo 4: "
+            + ", ".join(faltantes)
         )
-
-    # ======================================================
-    # SOLO EXPEDICIONES (C01)
-    # ======================================================
-
-    df = df[
-        df["TIPO_EVENTO"] == "C01"
-    ].copy()
-
-    # ======================================================
-    # ELIMINAR FS
-    # ======================================================
-
-    df = df[
-        df["SENTIDO"] != "FS"
-    ].copy()
-
-    # ======================================================
-    # DICCIONARIO TS -> SERVICIO
-    # ======================================================
 
     dic_servicios = cargar_servicios()
 
     registros = []
 
-    for _, fila in df.iterrows():
+    total_filas = 0
+    total_c01 = 0
+    total_fs = 0
 
-        codigo_ts = normaliza(
-            fila["CODIGO TS SERVICIO"]
-        )
+    print("Procesando registros...")
 
-        servicio = dic_servicios.get(
-            codigo_ts,
-            codigo_ts
-        )
+    for numero_fila, valores in enumerate(
+        ws.iter_rows(
+            min_row=fila_encabezado + 1,
+            values_only=True,
+        ),
+        start=fila_encabezado + 1,
+    ):
 
-        sentido = normaliza(
-            fila["SENTIDO"]
+        total_filas += 1
+
+        if total_filas % 10000 == 0:
+            print(
+                f"Filas procesadas: {total_filas:,}"
+            )
+
+        def valor(nombre):
+            pos = encabezados[nombre]
+
+            if pos >= len(valores):
+                return None
+
+            return valores[pos]
+
+        tipo_evento = normaliza(
+            valor("TIPO_EVENTO")
         ).upper()
 
+        # SOLO EXPEDICIONES COMERCIALES C01
+        if tipo_evento != "C01":
+            continue
+
+        total_c01 += 1
+
+        sentido = normaliza(
+            valor("SENTIDO")
+        ).upper()
+
+        # EXCLUIR FS
+        if sentido == "FS":
+            total_fs += 1
+            continue
+
         if sentido == "IDA":
-            sentido = "1"
+            sentido_final = "1"
 
         elif sentido == "RET":
-            sentido = "2"
+            sentido_final = "2"
 
         else:
             continue
 
+        codigo_ts = normaliza(
+            valor("CODIGO TS SERVICIO")
+        )
+
+        servicio = dic_servicios.get(
+            codigo_ts,
+            codigo_ts,
+        )
+
         tipo_bus = normaliza(
-            fila["TIPO_BUS"]
+            valor("TIPO_BUS")
         )
 
         if tipo_bus:
@@ -180,15 +245,17 @@ def leer_anexo4(ruta_excel):
 
         registro = {
 
-            "tipo": "EXP",
+            "tipo":
+                "EXP",
 
-            "evento": "EXP",
+            "evento":
+                "EXP",
 
             "hora":
-                fila["HORA_INICIO"],
+                valor("HORA_INICIO"),
 
             "fin":
-                fila["HORA_FIN"],
+                valor("HORA_FIN"),
 
             "tipo_bus":
                 tipo_bus,
@@ -201,47 +268,54 @@ def leer_anexo4(ruta_excel):
 
             "tipo_dia":
                 formato_tipo_dia(
-                    fila["TIPO_DIA"]
+                    valor("TIPO_DIA")
                 ),
 
             "sentido":
-                sentido,
+                sentido_final,
 
-            # Información adicional
             "bus":
-                fila["BUS_LOGICO"],
+                valor("BUS_LOGICO"),
 
             "desde":
-                fila["PUNTO_INICIO"],
+                valor("PUNTO_INICIO"),
 
             "hasta":
-                fila["PUNTO_FIN"],
+                valor("PUNTO_FIN"),
 
             "km":
-                fila["DISTANCIA (KM)"],
+                valor("DISTANCIA (KM)"),
 
             "fila":
-                fila.tolist()
-
+                numero_fila,
         }
 
         registros.append(
             registro
         )
 
+    wb.close()
+
     registros.sort(
         key=lambda x: (
             x["servicio"] or "",
             x["sentido"] or "",
-            str(x["hora"])
+            str(x["hora"]),
         )
     )
 
-    print("==============================")
+    print()
+    print("=" * 60)
+    print("ANEXO 4 PROCESADO")
+    print("=" * 60)
+    print("FILAS REVISADAS:", total_filas)
+    print("C01 ENCONTRADAS:", total_c01)
+    print("FS EXCLUIDAS:", total_fs)
     print("TOTAL EXP:", len(registros))
-    print("==============================")
+    print("=" * 60)
 
     return registros
+
 # ==========================================================
 # VALIDAR UNIDAD ANEXO 4
 # ==========================================================

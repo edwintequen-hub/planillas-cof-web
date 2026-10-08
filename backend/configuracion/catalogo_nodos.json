@@ -1,0 +1,491 @@
+{
+  "version": 1,
+  "registros": [
+    {
+      "unidad": "ALFA",
+      "codigo": "T801 00I",
+      "terminal": "Huamachuco",
+      "nodo": "Huamachuco"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T803 00I",
+      "terminal": "El Retiro",
+      "nodo": "El Retiro"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T805 00I",
+      "terminal": "El Retiro",
+      "nodo": "El Retiro"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T805 00R",
+      "terminal": "Santa Margarita",
+      "nodo": "Santa Margarita"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T805 C0 00R",
+      "terminal": "Santa Margarita",
+      "nodo": "Santa Margarita"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T807 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T807 C2 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T808 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Colo Colo"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T808 00R",
+      "terminal": "Santa Marta",
+      "nodo": "Santa Marta"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T809 00I",
+      "terminal": "El Retiro",
+      "nodo": "Antillanca"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T810 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Santa Marta"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T812 00I",
+      "terminal": "Condell",
+      "nodo": "Condell"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T812 00R",
+      "terminal": "Condell",
+      "nodo": "EIM La Cisterna"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T813 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Valle Grande"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T816 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Santa Marta"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T816 00R",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Vespucio Norte"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T817 00I",
+      "terminal": "Huamachuco",
+      "nodo": "Huamachuco"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T818 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Pucara"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T818 00R",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Vespucio Norte"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T818 E0 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Pucara"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T818 E0 00R",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T820 00I",
+      "terminal": "El Retiro",
+      "nodo": "El Retiro"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T822 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Santa Marta"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T822 00R",
+      "terminal": "Santa Marta",
+      "nodo": "Nueva Bilbao"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T824 00I",
+      "terminal": "Huamachuco",
+      "nodo": "Huamachuco"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T825 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Vespucio Norte"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T826 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T828 00I",
+      "terminal": "Huamachuco",
+      "nodo": "Huamachuco"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T829 00I",
+      "terminal": "El Retiro",
+      "nodo": "El Retiro"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T830 E3 00I",
+      "terminal": "El Retiro",
+      "nodo": "El Retiro"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T832 00I",
+      "terminal": "Santa Marta",
+      "nodo": "Pucara"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T836 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T837 00I",
+      "terminal": "Santa Marta",
+      "nodo": "(M) Los Libertadores"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T841 00I",
+      "terminal": "Condell",
+      "nodo": "Condell"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T841 00R",
+      "terminal": "Condell",
+      "nodo": "(M) Pedro de Valdivia"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T841 C2 00I",
+      "terminal": "Condell",
+      "nodo": "Condell"
+    },
+    {
+      "unidad": "ALFA",
+      "codigo": "T841 E0 00I",
+      "terminal": "Condell",
+      "nodo": "Condell"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T902 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Av Las Torres"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T902 E3 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Av Las Torres"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T904 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Los Libertadores"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T918 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Escuela Militar"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T918 00R",
+      "terminal": "Aguirre Luco",
+      "nodo": "Av. Dorsal"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T919 00R",
+      "terminal": "Aguirre Luco",
+      "nodo": "Vespucio Norte"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T922 00I",
+      "terminal": "Pie Andino",
+      "nodo": "Pie Andino"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T923 C0 00I",
+      "terminal": "Pie Andino",
+      "nodo": "Pie Andino"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T925 00I",
+      "terminal": "Pie Andino",
+      "nodo": "EIM La Cisterna"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T925 00R",
+      "terminal": "Pie Andino",
+      "nodo": "Dr. Eduardo Cordero"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T926 00I",
+      "terminal": "Pie Andino",
+      "nodo": "EIM La Cisterna"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T926 00R",
+      "terminal": "Pie Andino",
+      "nodo": "Dr. Eduardo Cordero"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T929 00I",
+      "terminal": "Pie Andino",
+      "nodo": "Pie Andino"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T929 00R",
+      "terminal": "Pie Andino",
+      "nodo": "(M) Elisa Correa"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T930 C0 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T932 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T932 00R",
+      "terminal": "Juanita",
+      "nodo": "Jose Luis Coo"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T932 C0 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T932 C0 00R",
+      "terminal": "Juanita",
+      "nodo": "Jose Luis Coo"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T933 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Los Libertadores"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T933 C2 00I",
+      "terminal": "Aguirre Luco",
+      "nodo": "Los Libertadores"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T933 C2 00R",
+      "terminal": "Aguirre Luco",
+      "nodo": "Los Libertadores"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T935 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T935 00R",
+      "terminal": "Juanita",
+      "nodo": "Av Los Toros"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T938 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T938 00R",
+      "terminal": "Juanita",
+      "nodo": "Jose Luis Coo"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T940 00I",
+      "terminal": "Pie Andino",
+      "nodo": "EIM La Cisterna"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T940 00R",
+      "terminal": "Pie Andino",
+      "nodo": "Dr. Eduardo Cordero"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T945 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T945 00R",
+      "terminal": "Juanita",
+      "nodo": "EIM Bellavista F"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T945 E0 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T945 E0 00R",
+      "terminal": "Juanita",
+      "nodo": "EIM Bellavista F"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T950 E3 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T950 E3 00R",
+      "terminal": "Juanita",
+      "nodo": "San Martin"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T953 00I",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T953 00R",
+      "terminal": "Juanita",
+      "nodo": "Jose Luis Coo"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T962 00I",
+      "terminal": "Pie Andino",
+      "nodo": "General Amengual"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T962 00R",
+      "terminal": "Pie Andino",
+      "nodo": "Paseo Pie Andino"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T963 E0 00I",
+      "terminal": "Juanita",
+      "nodo": "Purisima"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T963 E0 00R",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T964 00I",
+      "terminal": "Juanita",
+      "nodo": "Av El Libano"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T964 00R",
+      "terminal": "Juanita",
+      "nodo": "Av Juanita"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T967 00I",
+      "terminal": "Juanita",
+      "nodo": "Los Tilos"
+    },
+    {
+      "unidad": "OMEGA",
+      "codigo": "T967 00R",
+      "terminal": "Juanita",
+      "nodo": "Camino La Piramide"
+    }
+  ]
+}
