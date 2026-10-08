@@ -141,9 +141,7 @@ def leer_fus(
     registros = []
 
 
-
     for archivo in archivos_fus:
-
 
 
         print("==============================")
@@ -152,151 +150,99 @@ def leer_fus(
         print("==============================")
 
 
-
         wb = load_workbook(
             archivo,
-            data_only=True
+            data_only=True,
+            read_only=True
         )
 
 
-        ws = wb.active
+        try:
+
+            ws = wb.active
 
 
-
-        for fila in range(
-            2,
-            ws.max_row + 1
-        ):
-
+            for fila in ws.iter_rows(
+                min_row=2,
+                values_only=True
+            ):
 
 
-            tipo = normaliza(
-                ws.cell(
-                    fila,
-                    2
-                ).value
-            )
+                def valor(columna):
+
+                    indice = columna - 1
+
+                    if indice >= len(fila):
+
+                        return None
+
+                    return fila[indice]
 
 
-
-            if tipo not in ("EXP", "VPA", "VEX"):
-
-                continue
-
+                tipo = normaliza(
+                    valor(2)
+                )
 
 
+                if tipo not in ("EXP", "VPA", "VEX"):
 
-            registro = {
-
-                "tipo": tipo,
-                "evento":
-
-                    ws.cell(
-                        fila,
-                        1
-                    ).value,
+                    continue
 
 
+                registro = {
 
-                "hora":
+                    "tipo": tipo,
 
-                    ws.cell(
-                        fila,
-                        3
-                    ).value,
+                    "evento":
+                        valor(1),
 
+                    "hora":
+                        valor(3),
 
+                    "fin":
+                        valor(5),
 
-                "fin":
+                    "tipo_bus":
+                        valor(10),
 
-                    ws.cell(
-                        fila,
-                        5
-                    ).value,
+                    "servicio":
+                        servicio_puro(
+                            valor(11)
+                        ),
 
+                    "linea":
+                        valor(11),
 
+                    "tipo_dia":
+                        formato_tipo_dia(
+                            valor(18)
+                        ),
 
-                "tipo_bus":
+                    "sentido":
+                        valor(20)
 
-                    ws.cell(
-                        fila,
-                        10
-                    ).value,
-
-
-
-                "servicio":
-
-                    servicio_puro(
-
-                        ws.cell(
-                            fila,
-                            11
-                        ).value
-
-                    ),
+                }
 
 
-
-                "linea":
-
-                    ws.cell(
-                        fila,
-                        11
-                    ).value,
+                registros.append(
+                    registro
+                )
 
 
+        finally:
 
-                "tipo_dia":
-
-                    formato_tipo_dia(
-
-                        ws.cell(
-                            fila,
-                            18
-                        ).value
-
-                    ),
-
-
-
-                "sentido":
-
-                    ws.cell(
-                        fila,
-                        20
-                    ).value
-
-
-            }
-
-
-
-            registros.append(
-                registro
-            )
-
-
-
-        wb.close()
-
-
+            wb.close()
 
 
     registros.sort(
 
-    key=lambda x:(
-
-        x["servicio"] or "",
-
-        x["sentido"] or "",
-
-        hora_orden(x["hora"])
-
+        key=lambda x:(
+            x["servicio"] or "",
+            x["sentido"] or "",
+            hora_orden(x["hora"])
         )
 
     )
-
 
 
     print("==============================")
