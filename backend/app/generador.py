@@ -11,6 +11,9 @@ from .anexo4 import leer_anexo4
 # NORMALIZAR TEXTO
 # ==========================================================
 
+import time
+from .memoria_diag import memoria_actual
+
 def normaliza(valor):
 
     if valor is None:
@@ -863,6 +866,29 @@ def generar_planillas(
                 f"Generando: Servicio={serv} | Tipo={dia}"
             )
 
+            registros_diag = len(
+                indice_registros.get(
+                    (
+                        servicio_puro(serv),
+                        formato_tipo_dia(dia)
+                    ),
+                    []
+                )
+            )
+
+            print(
+                f"[PLANILLA_DIAG] INICIO "
+                f"dia={dia} servicio={serv} "
+                f"registros={registros_diag}",
+                flush=True
+            )
+
+            memoria_actual(
+                f"PLANILLA_INICIO dia={dia} servicio={serv}"
+            )
+
+            inicio_planilla_diag = time.perf_counter()
+
             resultado = crear_planilla(
 
                 indice_registros.get(
@@ -880,6 +906,22 @@ def generar_planillas(
                 dia,
                 terminal
 
+            )
+
+            duracion_planilla_diag = (
+                time.perf_counter() - inicio_planilla_diag
+            )
+
+            memoria_actual(
+                f"PLANILLA_FIN dia={dia} servicio={serv}"
+            )
+
+            print(
+                f"[PLANILLA_DIAG] FIN "
+                f"dia={dia} servicio={serv} "
+                f"segundos={duracion_planilla_diag:.2f} "
+                f"resultado={resultado}",
+                flush=True
             )
 
             if resultado:

@@ -1,5 +1,6 @@
 ﻿from pathlib import Path
 from .zip import crear_zip_planillas
+from .memoria_diag import memoria_actual
 from .limpieza import limpiar_salida_unidad
 
 import shutil
@@ -393,6 +394,7 @@ async def generar(
 
 
     print("ENTRO AL ENDPOINT GENERAR")
+    memoria_actual("01_ENTRADA_GENERAR")
 
     # Normalizar entradas
     archivos = [a for a in (archivos or []) if a and a.filename]
@@ -463,6 +465,8 @@ async def generar(
 
             archivos_guardados.append(ruta)
 
+        memoria_actual("02_DESPUES_GUARDAR_UPLOAD")
+
 
 
         print("ARCHIVOS TEMPORALES:")
@@ -531,6 +535,8 @@ async def generar(
                 )
 
         # ==================================
+        memoria_actual("03_DESPUES_VALIDAR_UNIDAD")
+
         # LIMPIAR ARCHIVOS ANTERIORES
         # ==================================
 
@@ -544,8 +550,12 @@ async def generar(
 
 
         # ==================================
+        memoria_actual("04_DESPUES_LIMPIAR_SALIDA")
+
         # GENERAR
         # ==================================
+
+        memoria_actual("05_ANTES_GENERAR_PLANILLAS")
 
         resultado = generar_planillas(
 
@@ -567,6 +577,9 @@ async def generar(
 
         )
 
+        memoria_actual("06_DESPUES_GENERAR_PLANILLAS")
+        memoria_actual("07_ANTES_ZIP")
+
         nombre_zip = crear_zip_planillas(
 
             OUTPUT_DIR,
@@ -574,6 +587,8 @@ async def generar(
             unidad
 
         )
+
+        memoria_actual("08_DESPUES_ZIP")
 
         print("==============================")
         print("ZIP GENERADO:")
@@ -676,6 +691,8 @@ async def generar(
 
     except Exception as e:
 
+        memoria_actual("90_EXCEPTION")
+
 
         print("==============================")
         print("ERROR GENERADOR")
@@ -704,6 +721,8 @@ async def generar(
 
     finally:
 
+        memoria_actual("98_ENTRADA_FINALLY")
+
 
         for archivo in archivos_guardados:
 
@@ -712,6 +731,8 @@ async def generar(
 
 
                 archivo.unlink()
+
+        memoria_actual("99_SALIDA_FINALLY")
 
 # ==========================================================
 # DESCARGAR ZIP
